@@ -1,3 +1,5 @@
+using book_store.Areas.Admin.Services;
+using book_store.Areas.Admin.Services.IServices;
 using book_store.DataAccess.Data;
 using book_store.DataAccess.Repository;
 using book_store.DataAccess.Repository.IRepository;
@@ -19,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,7 +41,7 @@ app.UseAuthorization();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
 app.UseSwagger();
 app.UseSwaggerUI();
