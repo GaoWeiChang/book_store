@@ -39,7 +39,34 @@ namespace book_store.Areas.Admin.Controllers
 
         public IActionResult Edit(int id)
         {
+            Category category = _categoryService.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();           
+            }
 
+            return View(category);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Category category)
+        {
+            bool success = _categoryService.UpdateCategory(category);
+
+            if (!success)
+            {
+                return View(category);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            bool success = _categoryService.DeleteCategory(id);
+            
+            return RedirectToAction("Index");
         }
     }
 }
