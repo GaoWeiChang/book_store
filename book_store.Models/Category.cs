@@ -20,6 +20,6 @@ namespace book_store.Models
 
         [DisplayName("Display Order")]
         [Range(1, 100, ErrorMessage = "Display Order must between 1~100")]
-        public string DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }
