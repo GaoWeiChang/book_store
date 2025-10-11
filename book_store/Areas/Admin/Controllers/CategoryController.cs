@@ -19,5 +19,27 @@ namespace book_store.Areas.Admin.Controllers
             List<Category> objCategoryList = _categoryService.GetAllCategories().ToList();
             return View(objCategoryList);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Category category)
+        {
+            bool success = _categoryService.CreateCategory(category);
+            if (!success)
+            {
+                return View(category);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+
+        }
     }
 }

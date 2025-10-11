@@ -31,6 +31,13 @@ namespace book_store.DataAccess.Repository
             query = tracked ? dbSet : dbSet.AsNoTracking();
             query = query.Where(filter);
 
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
             return query.FirstOrDefault();
         }
 
@@ -39,6 +46,13 @@ namespace book_store.DataAccess.Repository
             IQueryable<T> query = dbSet;
             if (filter != null) query = query.Where(filter);
 
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
             return query.ToList();
         }
 
