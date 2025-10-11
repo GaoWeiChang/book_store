@@ -22,27 +22,34 @@ namespace book_store.DataAccess.Repository
 
         public void Add(T entity)
         {
-            throw new NotImplementedException();
+            dbSet.Add(entity);
         }
 
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query;
+            query = tracked ? dbSet : dbSet.AsNoTracking();
+            query = query.Where(filter);
+
+            return query.FirstOrDefault();
         }
 
         public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = dbSet;
+            if (filter != null) query = query.Where(filter);
+
+            return query.ToList();
         }
 
         public void Remove(T entity)
         {
-            throw new NotImplementedException();
+            dbSet.Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<T> entity)
         {
-            throw new NotImplementedException();
+            dbSet.RemoveRange(entity);
         }
     }
 }
