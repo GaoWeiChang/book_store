@@ -42,11 +42,11 @@ namespace book_store.Areas.Admin.Controllers
 
         public IActionResult Edit(int id)
         {
-            ServiceResult<Category> result = _categoryService.GetCategoryById(id);
-            if (result.Data == null)
+            if (id < 0)
             {
                 return NotFound();
             }
+            ServiceResult<Category> result = _categoryService.GetCategoryById(id);
 
             return View(result.Data);
         }
@@ -57,18 +57,31 @@ namespace book_store.Areas.Admin.Controllers
             ServiceResult result = _categoryService.UpdateCategory(category);
             if (result.Success == false)
             {
+                TempData["error"] = result.Message;
                 return View(category);
             }
 
+            TempData["success"] = result.Message;
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpDelete]
         public IActionResult Delete(int id)
         {
             ServiceResult result = _categoryService.DeleteCategory(id);
 
             return RedirectToAction("Index");
         }
+
+        //[HttpPost, ActionName("Delete")]
+        //public IActionResult DeletePost(int id)
+        //{
+        //    ServiceResult<Category> obj = _categoryService.GetCategoryById(id);
+        //    if (obj.Success == false) return NotFound();
+
+        //    _categoryService.DeleteCategory(id);
+        //    TempData["success"] = obj.Message;
+        //    return RedirectToAction("Index");
+        //}
     }
 }

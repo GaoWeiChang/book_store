@@ -29,10 +29,10 @@
                         <td>@obj.DisplayOrder</td>
                         <td>
                             <div>
-                                <a class="btn btn-outline-info">
+                                <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-outline-info">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a class="btn btn-outline-danger">
+                                <a onClick="Delete('/Admin/Category/Delete/@obj.Id')" class="btn btn-outline-danger">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </div>

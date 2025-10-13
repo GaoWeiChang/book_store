@@ -74,20 +74,6 @@ namespace book_store.Areas.Admin.Services
                 return ServiceResult.Fail("Display order must be positive number.");
             }
 
-            // check duplicated name
-            var existingCategory = _unitOfWork.Category.Get(c => c.Name.ToLower() == category.Name.ToLower());
-            if (existingCategory != null)
-            {
-                return ServiceResult.Fail("This category already exist.");
-            }
-
-            // check duplicated display order
-            var existingDisplayOrder = _unitOfWork.Category.Get(c => c.DisplayOrder == category.DisplayOrder);
-            if (existingDisplayOrder != null)
-            {
-                return ServiceResult.Fail("This display order already exist.");
-            }
-
             try
             {
                 var ctgr = _unitOfWork.Category.Get(c => c.Id == category.Id, tracked: true);

@@ -68,11 +68,21 @@
             &copy; 2025 - MyBookStore - <i class="bi bi-book-half"></i>
         </div>
     </footer>
+
+    @* ลำดับสำคัญมาก - โหลด jQuery → libraries → ไฟล์ของคุณเอง *@
+
+    @* load jquery *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    @* libaries *@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="//cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    @* load another javascript eg.ajax *@
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/confimation_message.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
