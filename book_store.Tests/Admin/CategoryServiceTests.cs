@@ -1,6 +1,7 @@
 ﻿using book_store.Areas.Admin.Services;
 using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
+using book_store.Utility;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,11 @@ namespace book_store.Tests.Admin
 {
     public class CategoryServiceTests
     {
-        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
-        private readonly Mock<ICategoryRepository> _mockCategoryRepo;
         private readonly CategoryService _categoryService;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork = new Mock<IUnitOfWork>();
+
         public CategoryServiceTests()
         {
-            _mockUnitOfWork = new Mock<IUnitOfWork>();
-            _mockCategoryRepo = new Mock<ICategoryRepository>();
-
-            _mockUnitOfWork.Setup(u => u.Category).Returns(_mockCategoryRepo.Object);
-            
             _categoryService = new CategoryService(_mockUnitOfWork.Object);
         }
 
@@ -30,20 +26,19 @@ namespace book_store.Tests.Admin
         public void GetAllCategories_ReturnOrderedList()
         {
             // Arrange
-            var categories = new List<Category>
+            List<Category> categoryList = new List<Category>
             {
                 new Category { Id=3, Name="History", DisplayOrder=3 },
                 new Category { Id=1, Name="Action", DisplayOrder=1 },
                 new Category { Id=2, Name="Drama", DisplayOrder=2 }
             };
-            _mockCategoryRepo.Setup(c=>c.GetAll(null, null)).Returns(categories);
+
+            _mockUnitOfWork.Setup(x => x.Category.GetAll(null, null)).Returns(categoryList);
 
             // Act
             List<Category> result = _categoryService.GetAllCategories().ToList();
 
             // Assert
-            Assert.Equal(3, result.Count);
-
             Assert.Equal("Action", result[0].Name);
             Assert.Equal("Drama", result[1].Name);
             Assert.Equal("History", result[2].Name);
@@ -54,40 +49,108 @@ namespace book_store.Tests.Admin
         }
 
         [Fact]
-        public void CreateCategory_ReturnTrue()
+        public void CreateCategory_ReturnServiceResult_Success()
         {
             // Arrange
             Category category1 = new Category { Id = 1, Name = "Action", DisplayOrder = 1 };
             Category category2 = new Category { Id = 2, Name = "History", DisplayOrder = 2 };
 
-
-            _mockCategoryRepo.Setup(c => c.Get(It.IsAny<Expression<Func<Category, bool>>>(), null, false))
-                .Returns((Category)null);
+                        // blank database
+            _mockUnitOfWork.Setup(c => c.Category.Get(It.IsAny<Expression<Func<Category, bool>>>(), null, false))
+                .Returns(() => null);
 
             // Act
-            bool result1 = _categoryService.CreateCategory(category1);
-            bool result2 = _categoryService.CreateCategory(category2);
+            ServiceResult result1 = _categoryService.CreateCategory(category1);
+            ServiceResult result2 = _categoryService.CreateCategory(category2);
 
             // Assert
-            Assert.True(result1);
-            Assert.True(result2);
+            Assert.True(result1.Success);
+            Assert.Equal("Created category successfully.", result1.Message);
+
+            Assert.True(result2.Success);
+            Assert.Equal("Created category successfully.", result2.Message);
         }
 
         [Fact]
-        public void UpdateCategory_ReturnTrue()
+        public void CreateCategory_ReturnServiceResult_Fail()
         {
-            // Arrange
-            var existingCategory = new Category { Id = 1, Name = "Denny", DisplayOrder = 1 };
-            var updatedCategory = new Category { Id = 1, Name = "Tom", DisplayOrder = 3 };
+            var categoryList = new List<Category>();
 
-            _mockCategoryRepo.Setup(r => r.Get(It.Is<Expression<Func<Category, bool>>>(c => c.ToString().Contains("Id")), null, true)).
-                Returns(existingCategory);
+            // Arrange
+            Category category1 = new Category { Id = 1, Name = "Action", DisplayOrder = 1 };
+            Category category2 = new Category { Id = 2, Name = "Action", DisplayOrder = 2 };
+            Category category3 = new Category { Id = 3, Name = "War", DisplayOrder = 1 };
+            Category category4 = new Category { Id = 4, Name = "History", DisplayOrder = -1 };
+            Category category5 = new Category { Id = 2, Name = "Romantic", DisplayOrder = 3 };
+                
+                // mock of add data
+            _mockUnitOfWork.Setup(x => x.Category.Add(It.IsAny<Category>()))
+                           .Callback<Category>(c => categoryList.Add(c));
+
+                // mock for Get() for check data that added into the list
+            _mockUnitOfWork.Setup(x => x.Category.Get(It.IsAny<Expression<Func<Category, bool>>>(),
+                                                      null,
+                                                      false))
+                            .Returns<Expression<Func<Category, bool>>, string, bool>((expression, include, tracked) =>
+                            {
+                                var func = expression.Compile(); // แปลง Expression เป็น Func
+                                return categoryList.FirstOrDefault(func); // ค้นหาใน list
+                            });
 
             // Act
-            bool result = _categoryService.UpdateCategory(updatedCategory);
+            ServiceResult result1 = _categoryService.CreateCategory(category1);
+            ServiceResult result2 = _categoryService.CreateCategory(category2);
+            ServiceResult result3 = _categoryService.CreateCategory(category3);
+            ServiceResult result4 = _categoryService.CreateCategory(category4);
+            ServiceResult result5 = _categoryService.CreateCategory(category5);
+
 
             // Assert
-            Assert.True(result);
+            Assert.True(result1.Success);
+            Assert.Equal("Created category successfully.", result1.Message);
+
+            Assert.False(result2.Success);
+            Assert.Equal("This category name already exist.", result2.Message);
+
+            Assert.False(result3.Success);
+            Assert.Equal("This display order already exist.", result3.Message);
+
+            Assert.False(result4.Success);
+            Assert.Equal("Display order must be positive number.", result4.Message);
+
+            Assert.True(result5.Success);
+            Assert.Equal("Created category successfully.", result5.Message);
+        }
+
+
+        [Fact]
+        public void UpdateCategory_ReturnServiceResult_Success()
+        {
+            // Arrange
+            var categoryList = new List<Category>();
+
+            _mockUnitOfWork.Setup(x => x.Category.Add(It.IsAny<Category>()))
+               .Callback<Category>(c => categoryList.Add(c));
+
+            _mockUnitOfWork.Setup(x => x.Category.Get(It.IsAny<Expression<Func<Category, bool>>>(),
+                                          null,
+                                          true))
+                .Returns<Expression<Func<Category, bool>>, string, bool>((expression, include, tracked) =>
+                {
+                    var func = expression.Compile();
+                    return categoryList.FirstOrDefault(func); 
+                });
+
+            var existingCategory = new Category { Id = 1, Name = "Action", DisplayOrder = 1 };
+            var updatedCategory = new Category { Id = 1, Name = "Horror", DisplayOrder = 3 };
+
+            // Act
+            _categoryService.CreateCategory(existingCategory);
+            ServiceResult result = _categoryService.UpdateCategory(updatedCategory);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Update category successfully.", result.Message);
         }
 
         [Fact]
@@ -96,28 +159,15 @@ namespace book_store.Tests.Admin
             // Arrange
             var category = new Category { Id = 1, Name = "Action", DisplayOrder = 1 };
 
-            _mockCategoryRepo.Setup(c => c.Get(It.IsAny<Expression<Func<Category, bool>>>(), null, false))
+            _mockUnitOfWork.Setup(c => c.Category.Get(It.IsAny<Expression<Func<Category, bool>>>(), null, true))
                 .Returns(category);
 
             // Act
-            bool result = _categoryService.DeleteCategory(category.Id);
+            ServiceResult result = _categoryService.DeleteCategory(category.Id);
 
             // Assert
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void DeleteCategory_CategoryNotFound_ReturnsFalse()
-        {
-            // Arrange
-            _mockCategoryRepo.Setup(c => c.Get(It.IsAny<Expression<Func<Category, bool>>>(), null, false))
-                .Returns((Category)null);
-
-            // Act
-            bool result = _categoryService.DeleteCategory(2);
-
-            // Assert
-            Assert.False(result);
+            Assert.True(result.Success);
+            Assert.Equal("Delete category successfully.", result.Message);
         }
     }
 }
