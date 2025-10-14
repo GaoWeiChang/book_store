@@ -48,10 +48,11 @@
                         @*     </div> *@
                         @* </li> *@
                     </ul>
-                    <form class="d-flex">
-                        <input class="form-control me-sm-2" type="search" placeholder="Search">
-                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                    </form>
+                    @* <form class="d-flex"> *@
+                    @*     <input class="form-control me-sm-2" type="search" placeholder="Search"> *@
+                    @*     <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button> *@
+                    @* </form> *@
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -69,7 +70,7 @@
         </div>
     </footer>
 
-    @* ลำดับสำคัญมาก - โหลด jQuery → libraries → ไฟล์ของคุณเอง *@
+    @* ลำดับสำคัญมาก - load jquery -> libraries -> ไฟล์ของคุณเอง *@
 
     @* load jquery *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
