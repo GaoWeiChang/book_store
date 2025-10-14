@@ -2,11 +2,13 @@
 using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
 using book_store.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace book_store.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Roles.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

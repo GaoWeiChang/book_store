@@ -1,4 +1,4 @@
-using book_store.Areas.Admin.Services;
+﻿using book_store.Areas.Admin.Services;
 using book_store.Areas.Admin.Services.IServices;
 using book_store.DataAccess.Data;
 using book_store.DataAccess.Repository;
@@ -19,6 +19,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+builder.Services.ConfigureApplicationCookie(options => {
+    options.LoginPath = $"/Identity/Account/Login"; // เมื่อผู้ใช้พยายามเข้าถึงหน้าที่ต้องล็อกอินก่อน ระบบจะ redirect ไปที่
+    options.LogoutPath = $"/Identity/Account/Logout"; // หน้าที่ใช้สำหรับออกจากระบบ
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied"; // เมื่อผู้ใช้ล็อกอินแล้วแต่ไม่มีสิทธิ์เข้าถึงหน้าใดหน้าหนึ่ง จะถูกส่งไปที่หน้านี้
+});
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
