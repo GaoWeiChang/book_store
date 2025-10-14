@@ -13,7 +13,9 @@
                 url: url,
                 type: 'DELETE',
                 success: function (data) {
-                    location.reload();
+                    let id = url.split('/').pop();
+                    $('#row-' + id).remove();
+                    toastr.success(data.message);
                 }
             })
         }

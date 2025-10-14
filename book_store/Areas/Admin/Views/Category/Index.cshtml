@@ -24,7 +24,7 @@
             </thead>
             <tbody>
                 @foreach (var obj in Model){
-                    <tr class="table-light">
+                    <tr class="table-light" id="row-@obj.Id">
                         <td>@obj.Name</td>
                         <td>@obj.DisplayOrder</td>
                         <td>

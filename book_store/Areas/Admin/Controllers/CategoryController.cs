@@ -70,7 +70,11 @@ namespace book_store.Areas.Admin.Controllers
         {
             ServiceResult result = _categoryService.DeleteCategory(id);
 
-            return RedirectToAction("Index");
+            if (result.Success == false)
+            {
+                return Json(new { success = result.Success, message = result.Message });
+            }
+            return Json(new { success = result.Success, message = result.Message });
         }
 
         //[HttpPost, ActionName("Delete")]
