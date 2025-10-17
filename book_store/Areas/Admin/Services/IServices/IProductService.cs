@@ -7,6 +7,6 @@ namespace book_store.Areas.Admin.Services.IServices
     public interface IProductService
     {
         IEnumerable<Product> GetAllProducts();
-        public ServiceResult CreateCategory(ProductVM productVM, List<IFormFile> files);
+        public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files);
     }
 }

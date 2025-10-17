@@ -25,7 +25,7 @@ namespace book_store.Areas.Admin.Services
             return _unitOfWork.Product.GetAll(includeProperties:"Category");
         }
 
-        public ServiceResult CreateCategory(ProductVM productVM, List<IFormFile> files)
+        public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files)
         {
             try
             {

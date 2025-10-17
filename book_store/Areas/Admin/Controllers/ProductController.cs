@@ -43,10 +43,25 @@ namespace book_store.Areas.Admin.Controllers
             return View(productVM);
         }
 
+        //public IActionResult Update(int? id)
+        //{
+        //    ProductVM productVM = new()
+        //    {
+        //        Product = new Product(),
+        //        CategoryList = _categoryService.GetAllCategories().Select(u => new SelectListItem
+        //        {
+        //            Text = u.Name,
+        //            Value = u.Id.ToString()
+        //        })
+        //    };
+
+
+        //}
+
         [HttpPost]
         public IActionResult Create(ProductVM productVM, List<IFormFile> files)
         {
-            ServiceResult result = _productService.CreateCategory(productVM, files);
+            ServiceResult result = _productService.CreateProduct(productVM, files);
             if (!result.Success)
             {
                 TempData["error"] = result.Message;
