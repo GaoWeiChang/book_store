@@ -83,7 +83,7 @@ namespace book_store.Areas.Admin.Services
 
             try
             {
-                var product = _unitOfWork.Product.Get(p => p.Id == id);
+                var product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "ProductImages");
                 if (product == null) return ServiceResult<Product>.Fail("id not found");
 
                 return ServiceResult<Product>.Ok(product, "Success to get product");
@@ -91,6 +91,59 @@ namespace book_store.Areas.Admin.Services
             catch (Exception ex)
             {
                 return ServiceResult<Product>.Fail($"Fail to retrive product: {ex.Message}");
+            }
+        }
+
+        public ServiceResult UpdateProduct(ProductVM productVM, List<IFormFile> files)
+        {
+            try
+            {
+                _unitOfWork.Product.Update(productVM.Product);
+                _unitOfWork.Save();
+
+                // save product image
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (files != null)
+                {
+                    foreach (var file in files)
+                    {
+                        // Save each file in folder
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productPath = @"images\products\product-" + productVM.Product.Id;
+                        string path = Path.Combine(wwwRootPath, productPath);
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+
+                        using (var fileSteam = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileSteam);
+                        }
+
+                        // add product image
+                        ProductImage productImage = new()
+                        {
+                            ImageUrl = @"\" + productPath + @"\" + fileName,
+                            ProductId = productVM.Product.Id,
+                        };
+
+                        if (productVM.Product.ProductImages == null)
+                        {
+                            productVM.Product.ProductImages = new List<ProductImage>();
+                        }
+                        productVM.Product.ProductImages.Add(productImage);
+                    }
+
+                    _unitOfWork.Product.Update(productVM.Product);
+                    _unitOfWork.Save();
+                }
+
+                return ServiceResult.Ok("Updated product successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to update product: {ex.Message}");
             }
         }
     }

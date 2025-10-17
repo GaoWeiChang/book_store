@@ -56,7 +56,7 @@ namespace book_store.Areas.Admin.Services
 
             try
             {
-                var category = _unitOfWork.Category.Get(c => c.Id == id, includeProperties: "ProductImages");
+                var category = _unitOfWork.Category.Get(c => c.Id == id);
                 if (category == null) return ServiceResult<Category>.Fail("id not found");
 
                 return ServiceResult<Category>.Ok(category, "Success to get category");
@@ -76,13 +76,9 @@ namespace book_store.Areas.Admin.Services
 
             try
             {
-                var ctgr = _unitOfWork.Category.Get(c => c.Id == category.Id, tracked: true);
-                if (ctgr == null) return ServiceResult.Fail($"Category Id {category.Id} not found.");
+                if (category == null) return ServiceResult.Fail($"Category Id {category.Id} not found.");
 
-                ctgr.Name = category.Name;
-                ctgr.DisplayOrder = category.DisplayOrder;
-
-                _unitOfWork.Category.Update(ctgr);
+                _unitOfWork.Category.Update(category);
                 _unitOfWork.Save();
                 return ServiceResult.Ok("Update category successfully.");
             }

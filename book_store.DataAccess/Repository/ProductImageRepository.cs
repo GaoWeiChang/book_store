@@ -19,6 +19,7 @@ namespace book_store.DataAccess.Repository
 
         public void Update(ProductImage obj)
         {
+            _db.ProductImages.Update(obj);
         }
     }
 }
