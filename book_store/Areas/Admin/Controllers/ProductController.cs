@@ -43,20 +43,21 @@ namespace book_store.Areas.Admin.Controllers
             return View(productVM);
         }
 
-        //public IActionResult Update(int? id)
-        //{
-        //    ProductVM productVM = new()
-        //    {
-        //        Product = new Product(),
-        //        CategoryList = _categoryService.GetAllCategories().Select(u => new SelectListItem
-        //        {
-        //            Text = u.Name,
-        //            Value = u.Id.ToString()
-        //        })
-        //    };
+        public IActionResult Edit(int? id)
+        {
+            ProductVM productVM = new()
+            {
+                Product = new Product(),
+                CategoryList = _categoryService.GetAllCategories().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                })
+            };
 
-
-        //}
+            productVM.Product = _productService.GetProductById(id).Data;
+            return View(productVM);
+        }
 
         [HttpPost]
         public IActionResult Create(ProductVM productVM, List<IFormFile> files)

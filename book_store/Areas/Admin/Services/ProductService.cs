@@ -76,5 +76,22 @@ namespace book_store.Areas.Admin.Services
                 return ServiceResult.Fail($"Fail to create product: {ex.Message}");
             }
         }
+
+        public ServiceResult<Product> GetProductById(int? id)
+        {
+            if (id < 0) return ServiceResult<Product>.Fail("id must be positive number");
+
+            try
+            {
+                var product = _unitOfWork.Product.Get(p => p.Id == id);
+                if (product == null) return ServiceResult<Product>.Fail("id not found");
+
+                return ServiceResult<Product>.Ok(product, "Success to get product");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<Product>.Fail($"Fail to retrive product: {ex.Message}");
+            }
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace book_store.Areas.Admin.Services.IServices
     {
         IEnumerable<Product> GetAllProducts();
         public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files);
+        public ServiceResult<Product> GetProductById(int? id);
     }
 }

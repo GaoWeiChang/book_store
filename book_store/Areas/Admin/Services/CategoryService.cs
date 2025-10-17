@@ -56,7 +56,7 @@ namespace book_store.Areas.Admin.Services
 
             try
             {
-                var category = _unitOfWork.Category.Get(c => c.Id == id);
+                var category = _unitOfWork.Category.Get(c => c.Id == id, includeProperties: "ProductImages");
                 if (category == null) return ServiceResult<Category>.Fail("id not found");
 
                 return ServiceResult<Category>.Ok(category, "Success to get category");
