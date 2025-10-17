@@ -13,16 +13,16 @@ function loadDataTable() {
             { data: 'price', "width": "10%" },
             { data: 'author', "width": "20%" },
             { data: 'category.name', "width": "15%" },
-            //{
-            //    data: 'id',
-            //    "render": function (data) {
-            //        return
-            //        `<div class="w-50 btn-group" role="group">
-            //             <a onClick=Delete('/Admin/Product/Delete/${data}') class="btn btn-outline-danger"> <i class="bi bi-trash-fill"></i></a>
-            //        </div>`
-            //    },
-            //    "width": "25%"
-            //}
+            {
+                data: 'id',
+                "render": function (data) {
+                    return `<div class="w-20 text-center">
+                        <a href="/Admin/Product/Edit?id=${data}" class="btn btn-outline-info"><i class="bi bi-pencil-square"></i></a>
+                        <a onClick=Delete('/Admin/Product/Delete/${data}') class="btn btn-outline-danger"> <i class="bi bi-trash-fill"></i></a>
+                    </div>`;
+                },
+                "width": "25%"
+            }
         ]
     });
 }
