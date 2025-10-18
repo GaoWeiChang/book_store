@@ -78,16 +78,5 @@ namespace book_store.Areas.Admin.Controllers
             }
             return Json(new { success = result.Success, message = result.Message });
         }
-
-        //[HttpPost, ActionName("Delete")]
-        //public IActionResult DeletePost(int id)
-        //{
-        //    ServiceResult<Category> obj = _categoryService.GetCategoryById(id);
-        //    if (obj.Success == false) return NotFound();
-
-        //    _categoryService.DeleteCategory(id);
-        //    TempData["success"] = obj.Message;
-        //    return RedirectToAction("Index");
-        //}
     }
 }

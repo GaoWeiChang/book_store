@@ -8,7 +8,8 @@ namespace book_store.Areas.Admin.Services.IServices
     {
         IEnumerable<Product> GetAllProducts();
         public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files);
-        public ServiceResult<Product> GetProductById(int? id);
+        public ServiceResult<Product> GetProductById(int? id, string? includeProperties = null, bool tracked = false);
         public ServiceResult UpdateProduct(ProductVM productVM, List<IFormFile> files);
+        public ServiceResult DeleteProduct(int? id);
     }
 }

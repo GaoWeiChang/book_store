@@ -154,7 +154,7 @@ namespace book_store.Tests.Admin
         }
 
         [Fact]
-        public void DeleteCategory_ReturnTrue()
+        public void DeleteCategory_ReturnServiceResult_Success()
         {
             // Arrange
             var category = new Category { Id = 1, Name = "Action", DisplayOrder = 1 };

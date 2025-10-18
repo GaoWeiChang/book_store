@@ -77,13 +77,13 @@ namespace book_store.Areas.Admin.Services
             }
         }
 
-        public ServiceResult<Product> GetProductById(int? id)
+        public ServiceResult<Product> GetProductById(int? id, string? includeProperties = null, bool tracked = false)
         {
             if (id < 0) return ServiceResult<Product>.Fail("id must be positive number");
 
             try
             {
-                var product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "ProductImages");
+                var product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties, tracked);
                 if (product == null) return ServiceResult<Product>.Fail("id not found");
 
                 return ServiceResult<Product>.Ok(product, "Success to get product");
@@ -139,11 +139,41 @@ namespace book_store.Areas.Admin.Services
                     _unitOfWork.Save();
                 }
 
-                return ServiceResult.Ok("Updated product successfully.");
+                return ServiceResult.Ok("Update product successfully.");
             }
             catch (Exception ex)
             {
                 return ServiceResult.Fail($"Fail to update product: {ex.Message}");
+            }
+        }
+
+        public ServiceResult DeleteProduct(int? id)
+        {
+            try
+            {
+                var product = _unitOfWork.Product.Get(p => p.Id == id, tracked: true);
+                if (product == null) return ServiceResult.Fail($"Product Id {id} not found.");
+
+                // delete image file
+                string productPath = @"images\products\product-" + id;
+                string path = Path.Combine(_webHostEnvironment.WebRootPath, productPath); // eg. ProjectName\wwwroot\images\product
+                if (Directory.Exists(path))
+                {
+                    string[] filePaths = Directory.GetFiles(path);
+                    foreach (string filePath in filePaths)
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    Directory.Delete(path);
+                }
+
+                _unitOfWork.Product.Remove(product);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("Delete product successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to delete product: {ex.Message}");
             }
         }
     }

@@ -17,12 +17,10 @@ namespace book_store.Areas.Admin.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public ProductController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
             _categoryService = categoryService;
-            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -72,7 +70,7 @@ namespace book_store.Areas.Admin.Controllers
                 })
             };
 
-            productVM.Product = _productService.GetProductById(id).Data;
+            productVM.Product = _productService.GetProductById(id, includeProperties: "ProductImages").Data;
             return View(productVM);
         }
 
@@ -98,32 +96,17 @@ namespace book_store.Areas.Admin.Controllers
             return Json(new { data = objProductList });
         }
 
-        //[HttpDelete]
-        //public IActionResult Delete(int? id)
-        //{
-        //    var productToBeDeleted = _productService.GetProductById(id).Data;
-        //    if (productToBeDeleted == null)
-        //    {
-        //        return Json(new { success = false, message = "Error while deleting" });
-        //    }
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            ServiceResult result = _productService.DeleteProduct(id);
 
-        //    string productPath = @"images\products\product-" + id;
-        //    string path = Path.Combine(_webHostEnvironment.WebRootPath, productPath); // eg. ProjectName\wwwroot\images\product
-        //    if (Directory.Exists(path))
-        //    {
-        //        string[] filePaths = Directory.GetFiles(path);
-        //        foreach (string filePath in filePaths)
-        //        {
-        //            System.IO.File.Delete(filePath);
-        //        }
-        //        Directory.Delete(path);
-        //    }
-
-        //    _unitOfWork.Product.Remove(productToBeDeleted);
-        //    _unitOfWork.Save();
-
-        //    return Json(new { success = true, message = "Delete Successful" });
-        //}
+            if (result.Success == false)
+            {
+                return Json(new { success = result.Success, message = result.Message });
+            }
+            return Json(new { success = result.Success, message = result.Message });
+        }
         # endregion
     }
 }
