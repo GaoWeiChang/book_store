@@ -20,7 +20,7 @@ namespace book_store.DataAccess.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
-
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +75,8 @@ namespace book_store.DataAccess.Data
                     CategoryId = 14,
                 }
             );
+
+
         }
     }
 }

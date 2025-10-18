@@ -17,5 +17,10 @@ namespace book_store.Areas.Customer.Controllers
             List<Product> productList = _homeService.GetAllProducts().ToList();
             return View(productList);
         }
+
+        public IActionResult Details(int id)
+        {
+            return View(id);
+        }
     }
 }

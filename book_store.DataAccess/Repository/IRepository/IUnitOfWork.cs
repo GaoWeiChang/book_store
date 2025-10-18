@@ -11,6 +11,7 @@ namespace book_store.DataAccess.Repository.IRepository
         ICategoryRepository Category { get; }
         IProductRepository Product { get; }
         IProductImageRepository ProductImage { get; }
+        IShoppingCartRepository ShoppingCart { get; }
         void Save();
     }
 }
