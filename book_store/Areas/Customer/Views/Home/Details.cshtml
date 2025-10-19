@@ -1,1 +1,96 @@
-﻿This is Detail Page of Product
+﻿@model ShoppingCart
+
+<form method="post">
+	<input asp-for="ProductId" hidden />
+	<div class="card bg-secondary mt-4 mb-4">
+        <div class="card-header bg-success">
+			<div class="row">
+				<div class="col-12 text-center mt-3">
+					<h3 class="text-dark text-uppercase">@Model.Product.Title</h3>
+					<p class="text-dark-50">by @Model.Product.Author</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<div class="row pb-3">
+                <div class="col-6">
+                </div>
+                <div class="col-6 col-lg-5 text-end">
+					<a asp-action="Index" class="btn btn-info bg-gradient fw-semibold text-uppercase">
+						<small>Back to home</small>
+					</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
+                        @if (Model.Product.ProductImages!=null && Model.Product.ProductImages.Count>0){
+                            @* bootstrap carousel *@
+                            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    @foreach(var imageWithIndex in Model.Product.ProductImages.Select((image,index)=>new {Image=image, Index=index})){
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@imageWithIndex.Index" 
+                                        class="@(imageWithIndex.Index==0?"active":"")" aria-current="true" aria-label="Slide 1"></button>
+                                    }
+                                </div>
+                                <div class="carousel-inner">
+                                    @foreach (var imageWithIndex in Model.Product.ProductImages.Select((image, index) => new { Image = image, Index = index }))
+                                    {
+                                        <div class="@(imageWithIndex.Index==0?"carousel-item active":"carousel-item")">
+                                        <img src="@imageWithIndex.Image.ImageUrl" class="d-block w-100" style="height: 350px; object-fit: cover;" alt="...">
+                                        </div>
+                                    }
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        }
+				</div>
+                <div class="col-12 col-lg-6 offset-lg-1">
+                    <div class="col-12 col-md-6 pb-4">
+                        <span class="badge rounded-pill bg-secondary">@Model.Product.Category.Name</span>
+                    </div>
+                    <div class="row ps-2">
+                        <h6 class="text-dark text-opacity-50 ">ISBN : @Model.Product.ISBN</h6>
+                    </div>
+                    <div class="row ps-2">
+                        <h6 class="text-dark text-opacity-50  pb-2">
+                            Price: @Model.Product.Price.ToString("c")
+                        </h6>
+                    </div>
+                    <div class="row pl-2 my-3"> 
+                         <p class="text-dark lh-sm">@Html.Raw(Model.Product.Description)</p>
+                    </div>
+
+                    <div class="row pl-2 mb-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-dark fw-semibold"
+                                      id="inputGroup-sizing-default">
+                                    Count
+                                </span>
+                                <input asp-for="Count" type="number" value="1" class="form-control text-end"
+                                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6 pb-1">
+                            <button type="submit"
+                                    class="btn btn-success bg-gradient  w-100 py-2 text-uppercase fw-semibold">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+    		</div>
+        </div>
+	</div>
+</form>

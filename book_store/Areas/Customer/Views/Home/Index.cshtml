@@ -22,16 +22,15 @@
                             </div>
                             <div class="pl-1">
                                 <p class="text-dark text-opacity-75 text-center mb-0">
-                                    Price:
-                                        @product.Price.ToString("c")
+                                    Price: @product.Price.ToString("c")
                                 </p>
                             </div>
                         </div>
 
                         <div>
                             <a asp-action="Details"
-                               asp-route-productId="@product.Id"
-                               class="btn btn-info form-control">
+                               asp-route-id="@product.Id"
+                               class="btn btn-info form-control mt-2">
                                 Details
                             </a>
                         </div>
