@@ -1,6 +1,7 @@
 ﻿using book_store.Areas.Admin.Services.IServices;
 using book_store.Areas.Customer.Services.IServices;
 using book_store.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace book_store.Areas.Customer.Controllers
@@ -30,6 +31,13 @@ namespace book_store.Areas.Customer.Controllers
                 Count = 1,
             };
             return View(cart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+
         }
     }
 }

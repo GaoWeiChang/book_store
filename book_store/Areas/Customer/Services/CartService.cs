@@ -1,0 +1,67 @@
+﻿using book_store.Areas.Customer.Services.IServices;
+using book_store.DataAccess.Repository.IRepository;
+using book_store.Models;
+using book_store.Utility;
+
+namespace book_store.Areas.Customer.Services
+{
+    public class CartService : ICartService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public CartService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public ServiceResult AddItemToCart(ShoppingCart shoppingCart)
+        {
+            try
+            {
+                shoppingCart.Count += 1;
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("Added to cart.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to create product: {ex.Message}.");
+            }
+        }
+
+        public IEnumerable<ShoppingCart> GetAllItemsFromCart(string? userId, string? includeProperties = null, bool tracked = false)
+        {
+            return _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product");
+        }
+
+        public ServiceResult<ShoppingCart> GetCartById(string? userId, int? productId)
+        {
+            if(productId < 0) return ServiceResult<ShoppingCart>.Fail($"Product Id must be positive.");
+
+            try
+            {
+                var cart = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == productId);
+                if (cart == null) return ServiceResult<ShoppingCart>.Fail("cart not found");
+
+                return ServiceResult<ShoppingCart>.Ok(cart, "Success to get cart");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<ShoppingCart>.Fail($"Fail to retrive cart: {ex.Message}");
+            }
+        }
+
+        public ServiceResult UpdateCart(ShoppingCart shoppingCart)
+        {
+            try
+            {
+                _unitOfWork.ShoppingCart.Update(shoppingCart);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("Cart Updated");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to update cart: {ex.Message}.");
+            }
+        }
+    }
+}
