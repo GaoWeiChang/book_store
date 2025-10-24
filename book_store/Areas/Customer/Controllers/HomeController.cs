@@ -1,8 +1,11 @@
 ﻿using book_store.Areas.Admin.Services.IServices;
 using book_store.Areas.Customer.Services.IServices;
+using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
+using book_store.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace book_store.Areas.Customer.Controllers
 {
@@ -11,10 +14,14 @@ namespace book_store.Areas.Customer.Controllers
     {
         private readonly IHomeService _homeService;
         private readonly IProductService _productService;
-        public HomeController(IHomeService homeService, IProductService productService)
+        private readonly ICartService _cartService;
+        private readonly IUnitOfWork _unitOfWork;
+        public HomeController(IHomeService homeService, IProductService productService, ICartService cartService, IUnitOfWork unitOfWork)
         {
             _homeService = homeService;
             _productService = productService;
+            _cartService = cartService;
+            _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
@@ -22,12 +29,12 @@ namespace book_store.Areas.Customer.Controllers
             return View(productList);
         }
 
-        public IActionResult Details(int id)
+        public IActionResult Details(int productId)
         {
             ShoppingCart cart = new ShoppingCart()
             {
-                ProductId = id,
-                Product = _productService.GetProductById(id, includeProperties: "Category,ProductImages").Data, // navigation property
+                ProductId = productId,
+                Product = _productService.GetProductById(productId, includeProperties: "Category,ProductImages").Data, // navigation property
                 Count = 1,
             };
             return View(cart);
@@ -37,7 +44,27 @@ namespace book_store.Areas.Customer.Controllers
         [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserId = userId;
 
+            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            _unitOfWork.Save();
+            //ServiceResult<ShoppingCart> result = _cartService.GetCartById(shoppingCart.ApplicationUserId, shoppingCart.ProductId);
+            //ShoppingCart cart = result.Data;
+
+            //if (cart != null)
+            //{
+            //    cart.Count += shoppingCart.Count;
+            //    _cartService.UpdateCart(cart);
+            //    TempData["success"] = result.Message;
+            //}
+            //else
+            //{
+            //    _cartService.AddItemToCart(shoppingCart);
+            //}
+
+            return RedirectToAction("Index");
         }
     }
 }

@@ -17,18 +17,17 @@ namespace book_store.Areas.Customer.Services
         {
             try
             {
-                shoppingCart.Count += 1;
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
                 _unitOfWork.Save();
                 return ServiceResult.Ok("Added to cart.");
             }
             catch (Exception ex)
             {
-                return ServiceResult.Fail($"Fail to create product: {ex.Message}.");
+                return ServiceResult.Fail($"Fail to add item: {ex.Message}.");
             }
         }
 
-        public IEnumerable<ShoppingCart> GetAllItemsFromCart(string? userId, string? includeProperties = null, bool tracked = false)
+        public IEnumerable<ShoppingCart> GetAllItemsFromCart(string? userId)
         {
             return _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product");
         }
@@ -40,7 +39,7 @@ namespace book_store.Areas.Customer.Services
             try
             {
                 var cart = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == productId);
-                if (cart == null) return ServiceResult<ShoppingCart>.Fail("cart not found");
+                if (cart == null) return ServiceResult<ShoppingCart>.Fail("Cart not found");
 
                 return ServiceResult<ShoppingCart>.Ok(cart, "Success to get cart");
             }

@@ -77,13 +77,13 @@ namespace book_store.Areas.Admin.Services
             }
         }
 
-        public ServiceResult<Product> GetProductById(int? id, string? includeProperties = null, bool tracked = false)
+        public ServiceResult<Product> GetProductById(int? productId, string? includeProperties = null, bool tracked = false)
         {
-            if (id < 0) return ServiceResult<Product>.Fail("id must be positive number");
+            if (productId < 0) return ServiceResult<Product>.Fail("id must be positive number");
 
             try
             {
-                var product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties, tracked);
+                var product = _unitOfWork.Product.Get(p => p.Id == productId, includeProperties, tracked);
                 if (product == null) return ServiceResult<Product>.Fail("id not found");
 
                 return ServiceResult<Product>.Ok(product, "Success to get product");
