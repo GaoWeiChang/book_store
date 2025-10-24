@@ -10,5 +10,6 @@ namespace book_store.Areas.Customer.Services.IServices
         public ServiceResult AddItemToCart(ShoppingCart shoppingCart);
         public ServiceResult<ShoppingCart> GetCartById(string? userId, int? productId);
         public ServiceResult UpdateCart(ShoppingCart shoppingCart);
+        public ServiceResult DeleteCart(int? cartId);
     }
 }

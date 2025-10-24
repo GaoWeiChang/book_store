@@ -56,11 +56,27 @@ namespace book_store.Areas.Customer.Services
             {
                 _unitOfWork.ShoppingCart.Update(shoppingCart);
                 _unitOfWork.Save();
-                return ServiceResult.Ok("Cart Updated");
+                return ServiceResult.Ok("Cart updated");
             }
             catch (Exception ex)
             {
                 return ServiceResult.Fail($"Fail to update cart: {ex.Message}.");
+            }
+        }
+
+        public ServiceResult DeleteCart(int? cartId)
+        {
+            try
+            {
+                var cart = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId, tracked: true);
+
+                _unitOfWork.ShoppingCart.Remove(cart);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("Cart deleted");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to delete cart: {ex.Message}");
             }
         }
     }
