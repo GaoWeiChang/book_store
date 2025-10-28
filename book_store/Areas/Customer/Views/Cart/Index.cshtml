@@ -21,7 +21,7 @@
 				</div>
 				<div class="col-md-10 offset-md-1">
 					@foreach(var item in Model.ShoppingCartList){
-						<div class="row border-bottom pb-3">
+						<div class="row border-bottom pb-3" id="row-@item.Id">
 							<div class="d-none d-lg-block col-lg-1 text-center py-2">
 								@if ((item.Product.ProductImages != null) && (item.Product.ProductImages.Count() > 0)){
 									<img src="@item.Product.ProductImages.FirstOrDefault().ImageUrl" class="card-img-top rounded w-100" />
@@ -37,23 +37,26 @@
 							<div class="col-12  col-lg-5 text-center row">
 								<div class="col-3 text-md-right pt-2 pt-md-4">
 									<h6 class="fw-semibold">
-										@item.Price.ToString("c")
-										<span class="text-muted">&nbsp;x&nbsp;</span>@item.Count
+										<span id="price-@item.Id">@item.Price.ToString("c")</span>
+										&nbsp;x&nbsp;<span class="text-muted" id="count-@item.Id">@item.Count</span>
+									</h6>
+									<h6 class="fw-semibold">
+										<span class="text-body-tertiary" id="total-@item.Id">@((item.Price * item.Count).ToString("c"))</span>
 									</h6>
 								</div>
 								<div class="col-6 col-sm-4 col-lg-6 pt-2">
 									<div class="w-75 btn-group" role="group">
-										<a onClick="IncreaseCartItem('/Customer/Cart/IncreaseCartItem?cartId=@item.Id')" class="btn btn-primary bg-gradient py-2">
+										<a onClick="IncreaseCartItem('/Customer/Cart/IncreaseCartItem/@item.Id')" class="btn btn-primary bg-gradient py-2">
 											<i class="bi bi-plus-square"></i>
 										</a> &nbsp;
-										<a asp-action="DecreaseCartItem" asp-route-cartId="@item.Id" class="btn btn-primary bg-gradient py-2">
+										<a onClick="DecreaseCartItem('/Customer/Cart/DecreaseCartItem/@item.Id')" class="btn btn-primary bg-gradient py-2">
 											<i class="bi bi-dash-square"></i>
 										</a>
 									</div>
 
 								</div>
 								<div class="col-3 col-sm-4 col-lg-2 offset-lg-1 text-right pt-2">
-									<a asp-action="Delete" asp-route-cartId="@item.Id" class="btn btn-danger bg-gradient py-2 ">
+									<a onclick="Delete('/Customer/Cart/Delete/@item.Id')" class="btn btn-danger bg-gradient py-2 ">
 										<i class="bi bi-trash-fill"></i>
 									</a>
 								</div>
@@ -69,7 +72,7 @@
 						<ul class="list-group mb-2">
 							<li class="d-flex justify-content-between align-items-center">
 								<h5 class="text-dark fw-semibold text-uppercase"> Total (USD)</h5>
-								<h4 class="text-dark fw-bolder">@Model.OrderHeader.OrderTotal.ToString("c")</h4>
+								<h4 class="text-dark fw-bolder" id="order-total">@Model.OrderHeader.OrderTotal.ToString("c")</h4>
 							</li>
 						</ul>
 					</div>

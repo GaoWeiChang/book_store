@@ -48,43 +48,44 @@ namespace book_store.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        public IActionResult IncreaseCartItem(int cartId)
+        public IActionResult IncreaseCartItem(int Id)
         {
-            var cart = _cartService.GetCartById(cartId).Data;
+            var cart = _cartService.GetCartById(Id).Data;
             cart.Count += 1;
             ServiceResult result = _cartService.UpdateCart(cart);
 
             return Json(new { success = result.Success, message = result.Message });
         }
 
-        public IActionResult DecreaseCartItem(int cartId)
+        [HttpPost]
+        public IActionResult DecreaseCartItem(int Id)
         {
-            var cart = _cartService.GetCartById(cartId).Data;
+            var cart = _cartService.GetCartById(Id).Data;
+            ServiceResult result;
+
             if (cart.Count <= 1)
             {
-                _cartService.DeleteCartItem(cartId);
+                result = _cartService.DeleteCartItem(Id);
             }
             else
             {
                 cart.Count -= 1;
-                _cartService.UpdateCart(cart);
+                result = _cartService.UpdateCart(cart);
             }
-            return RedirectToAction("Index");
+
+            return Json(new { success = result.Success, message = result.Message });
         }
 
-        public IActionResult Delete(int cartId)
+        [HttpPost]
+        public IActionResult Delete(int Id)
         {
-            ServiceResult result = _cartService.DeleteCartItem(cartId);
+            ServiceResult result = _cartService.DeleteCartItem(Id);
 
-            if (result.Success) {
-                TempData["success"] = result.Message;
-            }
-            else
+            if (result.Success == false)
             {
-                TempData["error"] = result.Message;
+                return Json(new { success = result.Success, message = result.Message });
             }
-
-            return RedirectToAction("Index");
+            return Json(new { success = result.Success, message = result.Message });
         }
     }
 }
