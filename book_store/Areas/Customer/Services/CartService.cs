@@ -2,6 +2,7 @@
 using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
 using book_store.Utility;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace book_store.Areas.Customer.Services
 {
@@ -32,7 +33,7 @@ namespace book_store.Areas.Customer.Services
             return _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product");
         }
 
-        public ServiceResult<ShoppingCart> GetCartById(string? userId, int? productId)
+        public ServiceResult<ShoppingCart> GetCartItemById(string userId, int productId)
         {
             if(productId < 0) return ServiceResult<ShoppingCart>.Fail($"Product Id must be positive.");
 
@@ -46,6 +47,21 @@ namespace book_store.Areas.Customer.Services
             catch (Exception ex)
             {
                 return ServiceResult<ShoppingCart>.Fail($"Fail to retrive cart: {ex.Message}");
+            }
+        }
+
+        public ServiceResult<ShoppingCart> GetCartById(int cartId)
+        {
+            try
+            {
+                var cart = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId);
+                if (cart == null) return ServiceResult<ShoppingCart>.Fail("Cart not found");
+
+                return ServiceResult<ShoppingCart>.Ok(cart, "Success to get cart item");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<ShoppingCart>.Fail($"Fail to retrive cart item: {ex.Message}");
             }
         }
 
@@ -63,7 +79,7 @@ namespace book_store.Areas.Customer.Services
             }
         }
 
-        public ServiceResult DeleteCart(int? cartId)
+        public ServiceResult DeleteCartItem(int? cartId)
         {
             try
             {

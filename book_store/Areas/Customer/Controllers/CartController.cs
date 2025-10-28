@@ -2,6 +2,7 @@
 using book_store.Areas.Customer.Services.IServices;
 using book_store.Models;
 using book_store.Models.ViewModels;
+using book_store.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -46,5 +47,29 @@ namespace book_store.Areas.Customer.Controllers
             return View(ShoppingCartVM);
         }
 
+        [HttpPost]
+        public IActionResult IncreaseCartItem(int cartId)
+        {
+            var cart = _cartService.GetCartById(cartId).Data;
+            cart.Count += 1;
+            ServiceResult result = _cartService.UpdateCart(cart);
+
+            return Json(new { success = result.Success, message = result.Message });
+        }
+
+        public IActionResult DecreaseCartItem(int cartId)
+        {
+            var cart = _cartService.GetCartById(cartId).Data;
+            if (cart.Count <= 1)
+            {
+                _cartService.DeleteCartItem(cartId);
+            }
+            else
+            {
+                cart.Count -= 1;
+                _cartService.UpdateCart(cart);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

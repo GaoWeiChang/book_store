@@ -8,8 +8,9 @@ namespace book_store.Areas.Customer.Services.IServices
     {
         IEnumerable<ShoppingCart> GetAllItemsFromCart(string? userId);
         public ServiceResult AddItemToCart(ShoppingCart shoppingCart);
-        public ServiceResult<ShoppingCart> GetCartById(string? userId, int? productId);
+        public ServiceResult<ShoppingCart> GetCartItemById(string userId, int productId);
+        public ServiceResult<ShoppingCart> GetCartById(int cartId);
         public ServiceResult UpdateCart(ShoppingCart shoppingCart);
-        public ServiceResult DeleteCart(int? cartId);
+        public ServiceResult DeleteCartItem(int? cartId);
     }
 }

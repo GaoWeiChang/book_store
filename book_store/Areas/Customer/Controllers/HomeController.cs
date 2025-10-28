@@ -37,6 +37,7 @@ namespace book_store.Areas.Customer.Controllers
                 Product = _productService.GetProductById(productId, includeProperties: "Category,ProductImages").Data, // navigation property
                 Count = 1,
             };
+
             return View(cart);
         }
 
@@ -48,7 +49,7 @@ namespace book_store.Areas.Customer.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             shoppingCart.ApplicationUserId = userId;
 
-            ServiceResult<ShoppingCart> result = _cartService.GetCartById(shoppingCart.ApplicationUserId, shoppingCart.ProductId);
+            ServiceResult<ShoppingCart> result = _cartService.GetCartItemById(userId=shoppingCart.ApplicationUserId, shoppingCart.ProductId);
             ShoppingCart cart = result.Data;
 
             if (cart != null)
@@ -61,9 +62,8 @@ namespace book_store.Areas.Customer.Controllers
                 _cartService.AddItemToCart(shoppingCart);
             }
 
+            
             return RedirectToAction("Index");
         }
-
-
     }
 }
