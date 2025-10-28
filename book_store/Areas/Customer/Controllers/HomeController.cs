@@ -48,23 +48,22 @@ namespace book_store.Areas.Customer.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             shoppingCart.ApplicationUserId = userId;
 
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
-            _unitOfWork.Save();
-            //ServiceResult<ShoppingCart> result = _cartService.GetCartById(shoppingCart.ApplicationUserId, shoppingCart.ProductId);
-            //ShoppingCart cart = result.Data;
+            ServiceResult<ShoppingCart> result = _cartService.GetCartById(shoppingCart.ApplicationUserId, shoppingCart.ProductId);
+            ShoppingCart cart = result.Data;
 
-            //if (cart != null)
-            //{
-            //    cart.Count += shoppingCart.Count;
-            //    _cartService.UpdateCart(cart);
-            //    TempData["success"] = result.Message;
-            //}
-            //else
-            //{
-            //    _cartService.AddItemToCart(shoppingCart);
-            //}
+            if (cart != null)
+            {
+                cart.Count += shoppingCart.Count;
+                _cartService.UpdateCart(cart);
+            }
+            else
+            {
+                _cartService.AddItemToCart(shoppingCart);
+            }
 
             return RedirectToAction("Index");
         }
+
+
     }
 }
