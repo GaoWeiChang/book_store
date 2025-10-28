@@ -6,7 +6,8 @@ namespace book_store.Areas.Admin.Services.IServices
 {
     public interface IProductService
     {
-        IEnumerable<Product> GetAllProducts();
+        public IEnumerable<Product> GetAllProducts();
+        public IEnumerable<ProductImage> GetAllProductImages();
         public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files);
         public ServiceResult<Product> GetProductById(int? productId, string? includeProperties = null, bool tracked = false);
         public ServiceResult UpdateProduct(ProductVM productVM, List<IFormFile> files);

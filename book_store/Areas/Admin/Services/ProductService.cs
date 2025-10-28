@@ -25,6 +25,11 @@ namespace book_store.Areas.Admin.Services
             return _unitOfWork.Product.GetAll(includeProperties:"Category");
         }
 
+        public IEnumerable<ProductImage> GetAllProductImages()
+        {
+            return _unitOfWork.ProductImage.GetAll();
+        }
+
         public ServiceResult CreateProduct(ProductVM productVM, List<IFormFile> files)
         {
             try
