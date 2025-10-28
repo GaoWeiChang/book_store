@@ -71,5 +71,20 @@ namespace book_store.Areas.Customer.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        public IActionResult Delete(int cartId)
+        {
+            ServiceResult result = _cartService.DeleteCartItem(cartId);
+
+            if (result.Success) {
+                TempData["success"] = result.Message;
+            }
+            else
+            {
+                TempData["error"] = result.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
