@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace book_store.Models.ViewModels
+namespace book_store.Models
 {
     public class OrderHeader
     {
@@ -44,6 +44,6 @@ namespace book_store.Models.ViewModels
         [Required]
         public string PostalCode { get; set; }
         [Required]
-        public string Name { get; set; } 
+        public string Name { get; set; }
     }
 }

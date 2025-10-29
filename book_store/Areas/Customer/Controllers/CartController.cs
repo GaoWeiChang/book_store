@@ -15,12 +15,15 @@ namespace book_store.Areas.Customer.Controllers
     {
         public readonly ICartService _cartService;
         public readonly IProductService _productService;
+        public readonly IOrderService _orderService;
+
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
-        public CartController(ICartService cartService, IProductService productService)
+        public CartController(ICartService cartService, IProductService productService, IOrderService orderService)
         {
             _cartService = cartService;
             _productService = productService;
+            _orderService = orderService;
         }
 
         public IActionResult Index()
@@ -40,34 +43,6 @@ namespace book_store.Areas.Customer.Controllers
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 cart.Product.ProductImages = productImage.Where(u => u.ProductId == cart.Product.Id).ToList();
-                cart.Price = cart.Product.Price;
-                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
-            }
-
-            return View(ShoppingCartVM);
-        }
-
-        public IActionResult Summary()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            ShoppingCartVM = new()
-            {
-                ShoppingCartList = _cartService.GetAllItemsFromCart(userId),
-                OrderHeader = new()
-            };
-
-            ShoppingCartVM.OrderHeader.ApplicationUser = _cartService.GetUserbyId(userId).Data;
-            ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
-            ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
-            ShoppingCartVM.OrderHeader.StreetAddress = ShoppingCartVM.OrderHeader.ApplicationUser.StreetAddress;
-            ShoppingCartVM.OrderHeader.City = ShoppingCartVM.OrderHeader.ApplicationUser.City;
-            ShoppingCartVM.OrderHeader.State = ShoppingCartVM.OrderHeader.ApplicationUser.State;
-            ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
-
-            foreach (var cart in ShoppingCartVM.ShoppingCartList)
-            {
                 cart.Price = cart.Product.Price;
                 ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
@@ -114,6 +89,62 @@ namespace book_store.Areas.Customer.Controllers
                 return Json(new { success = result.Success, message = result.Message });
             }
             return Json(new { success = result.Success, message = result.Message });
+        }
+
+        public IActionResult Summary()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            ShoppingCartVM = new()
+            {
+                ShoppingCartList = _cartService.GetAllItemsFromCart(userId),
+                OrderHeader = new()
+            };
+
+            ShoppingCartVM.OrderHeader.ApplicationUser = _cartService.GetUserbyId(userId).Data;
+            ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
+            ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
+            ShoppingCartVM.OrderHeader.StreetAddress = ShoppingCartVM.OrderHeader.ApplicationUser.StreetAddress;
+            ShoppingCartVM.OrderHeader.City = ShoppingCartVM.OrderHeader.ApplicationUser.City;
+            ShoppingCartVM.OrderHeader.State = ShoppingCartVM.OrderHeader.ApplicationUser.State;
+            ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
+
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                cart.Price = cart.Product.Price;
+                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+            }
+
+            return View(ShoppingCartVM);
+        }
+
+        [HttpPost]
+        [ActionName("Summary")]
+        public IActionResult SummaryPOST()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            ShoppingCartVM.ShoppingCartList = _cartService.GetAllItemsFromCart(userId);
+            ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
+            ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                cart.Price = cart.Product.Price;
+                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+            }
+            ShoppingCartVM.OrderHeader.PaymentStatus = Roles.PaymentStatusPending;
+            ShoppingCartVM.OrderHeader.OrderStatus = Roles.StatusPending;
+            
+            _orderService.AddOrderHeader(ShoppingCartVM.OrderHeader);
+
+            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            {
+
+            }
+
+            return RedirectToAction();
         }
     }
 }
