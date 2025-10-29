@@ -80,7 +80,7 @@ namespace book_store.Areas.Customer.Controllers
             return Json(new { success = result.Success, message = result.Message });
         }
 
-        [HttpPost]
+        [HttpDelete]
         public IActionResult Delete(int Id)
         {
             ServiceResult result = _cartService.DeleteCartItem(Id);
