@@ -141,10 +141,17 @@ namespace book_store.Areas.Customer.Controllers
 
             foreach(var cart in ShoppingCartVM.ShoppingCartList)
             {
-
+                OrderDetail orderDetail = new()
+                {
+                    ProductId = cart.ProductId,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                    Price = cart.Price,
+                    Count = cart.Count,
+                };
+                _orderService.AddOrderDetail(orderDetail);
             }
 
-            return RedirectToAction();
+            return RedirectToAction("OrderConfirmation", new { id = ShoppingCartVM.OrderHeader.Id });
         }
     }
 }
