@@ -65,6 +65,14 @@ namespace book_store.Areas.Customer.Services
             }
         }
 
+        //public ServiceResult<ApplicationUser> GetUser(int Id)
+        //{
+        //    try
+        //    {
+        //        var user = _unitOfWork.
+        //    }
+        //}
+
         public ServiceResult UpdateCart(ShoppingCart shoppingCart)
         {
             try

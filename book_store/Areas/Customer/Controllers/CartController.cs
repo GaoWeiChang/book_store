@@ -47,6 +47,20 @@ namespace book_store.Areas.Customer.Controllers
             return View(ShoppingCartVM);
         }
 
+        public IActionResult Summary()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            ShoppingCartVM = new()
+            {
+                ShoppingCartList = _cartService.GetAllItemsFromCart(userId),
+                OrderHeader = new()
+            };
+
+            ShoppingCartVM.OrderHeader.ApplicationUser = 
+        }
+
         [HttpPost]
         public IActionResult IncreaseCartItem(int Id)
         {
