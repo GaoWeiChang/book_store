@@ -17,6 +17,7 @@ namespace book_store.Areas.Customer.Controllers
         public readonly IProductService _productService;
         public readonly IOrderService _orderService;
 
+        [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
         public CartController(ICartService cartService, IProductService productService, IOrderService orderService)
@@ -126,6 +127,7 @@ namespace book_store.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            // set order header
             ShoppingCartVM.ShoppingCartList = _cartService.GetAllItemsFromCart(userId);
             ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
@@ -139,6 +141,7 @@ namespace book_store.Areas.Customer.Controllers
             
             _orderService.AddOrderHeader(ShoppingCartVM.OrderHeader);
 
+            // set order detail
             foreach(var cart in ShoppingCartVM.ShoppingCartList)
             {
                 OrderDetail orderDetail = new()
@@ -152,6 +155,11 @@ namespace book_store.Areas.Customer.Controllers
             }
 
             return RedirectToAction("OrderConfirmation", new { id = ShoppingCartVM.OrderHeader.Id });
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
         }
     }
 }
