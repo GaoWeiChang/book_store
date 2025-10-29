@@ -65,13 +65,20 @@ namespace book_store.Areas.Customer.Services
             }
         }
 
-        //public ServiceResult<ApplicationUser> GetUser(int Id)
-        //{
-        //    try
-        //    {
-        //        var user = _unitOfWork.
-        //    }
-        //}
+        public ServiceResult<ApplicationUser> GetUserbyId(string userId)
+        {
+            try
+            {
+                var user = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+                if (user == null) return ServiceResult<ApplicationUser>.Fail("User not found");
+
+                return ServiceResult<ApplicationUser>.Ok(user, "Success to get user");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<ApplicationUser>.Fail($"Fail to get user: {ex.Message}");
+            }
+        }
 
         public ServiceResult UpdateCart(ShoppingCart shoppingCart)
         {
