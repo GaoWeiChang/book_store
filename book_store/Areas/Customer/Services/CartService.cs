@@ -109,5 +109,19 @@ namespace book_store.Areas.Customer.Services
                 return ServiceResult.Fail($"Fail to delete cart: {ex.Message}");
             }
         }
+
+        public ServiceResult DeleteAllCartItem(IEnumerable<ShoppingCart> shoppingCarts)
+        {
+            try
+            {
+                _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("All cart item deleted");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to delete all item in cart: {ex.Message}");
+            }
+        }
     }
 }

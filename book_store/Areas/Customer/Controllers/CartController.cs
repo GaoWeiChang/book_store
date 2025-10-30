@@ -5,6 +5,7 @@ using book_store.Models.ViewModels;
 using book_store.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace book_store.Areas.Customer.Controllers
@@ -127,7 +128,7 @@ namespace book_store.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            // set order header
+            // set order header 
             ShoppingCartVM.ShoppingCartList = _cartService.GetAllItemsFromCart(userId);
             ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
@@ -154,11 +155,59 @@ namespace book_store.Areas.Customer.Controllers
                 _orderService.AddOrderDetail(orderDetail);
             }
 
-            return RedirectToAction("OrderConfirmation", new { id = ShoppingCartVM.OrderHeader.Id });
+            // stripe checkout
+            var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+                CancelUrl = domain + "customer/cart/index",
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            foreach (var item in ShoppingCartVM.ShoppingCartList)
+            {
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100), // $20.50 -> 2050
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Title
+                        }
+                    },
+                    Quantity = item.Count
+                };
+                options.LineItems.Add(sessionLineItem);
+            }
+            var service = new SessionService();
+            Session session = service.Create(options);
+            _orderService.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            Response.Headers.Add("Location", session.Url);
+                
+            return new StatusCodeResult(303); // redirect to different URL
         }
 
         public IActionResult OrderConfirmation(int id)
         {
+            OrderHeader orderHeader = _orderService.GetOrderHeader(id).Data;
+            if(orderHeader.PaymentStatus != Roles.PaymentStatusDelayedPayment)
+            {
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _orderService.UpdateStripePaymentID(id, session.Id, session.PaymentIntentId);
+                    _orderService.UpdateStatus(id, Roles.StatusApproved, Roles.PaymentStatusApproved);
+                }
+            }
+
+            IEnumerable<ShoppingCart> shoppingCarts = _cartService.GetAllItemsFromCart(orderHeader.ApplicationUserId);
+            _cartService.DeleteAllCartItem(shoppingCarts);
+            
             return View(id);
         }
     }
