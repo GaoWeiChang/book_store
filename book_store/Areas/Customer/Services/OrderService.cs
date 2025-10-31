@@ -28,6 +28,11 @@ namespace book_store.Areas.Customer.Services
             _unitOfWork = unitOfWork;
         }
 
+        public IEnumerable<OrderHeader> GetAllOrderHeaders()
+        {
+            return _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+        }
+
         public ServiceResult AddOrderHeader(OrderHeader orderHeader)
         {
             try
