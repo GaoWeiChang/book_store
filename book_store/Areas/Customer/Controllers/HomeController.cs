@@ -52,17 +52,26 @@ namespace book_store.Areas.Customer.Controllers
             ServiceResult<ShoppingCart> result = _cartService.GetCartItemById(userId=shoppingCart.ApplicationUserId, shoppingCart.ProductId);
             ShoppingCart cart = result.Data;
 
+            ServiceResult update_res;
             if (cart != null)
             {
                 cart.Count += shoppingCart.Count;
-                _cartService.UpdateCart(cart);
+                update_res = _cartService.UpdateCart(cart);
             }
             else
             {
-                _cartService.AddItemToCart(shoppingCart);
+                update_res = _cartService.AddItemToCart(shoppingCart);
             }
 
-            
+            if (update_res.Success)
+            {
+                TempData["success"] = update_res.Message;
+            }
+            else
+            {
+                TempData["error"] = update_res.Message;
+            }
+
             return RedirectToAction("Index");
         }
     }
