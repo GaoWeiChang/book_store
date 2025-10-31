@@ -4,19 +4,6 @@ using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
 using book_store.Models.ViewModels;
 using book_store.Utility;
-using Microsoft.AspNetCore.Mvc;
-using Stripe.Checkout;
-using Stripe.Climate;
-using System.Collections.Generic;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Stripe;
-using Stripe.Checkout;
-
 
 namespace book_store.Areas.Customer.Services
 {
@@ -31,6 +18,11 @@ namespace book_store.Areas.Customer.Services
         public IEnumerable<OrderHeader> GetAllOrderHeaders()
         {
             return _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+        }
+
+        public IEnumerable<OrderDetail> GetAllOrderDetails(int orderId)
+        {
+            return _unitOfWork.OrderDetail.GetAll(u =>  u.OrderHeaderId == orderId, includeProperties: "Product");
         }
 
         public ServiceResult AddOrderHeader(OrderHeader orderHeader)
@@ -59,6 +51,20 @@ namespace book_store.Areas.Customer.Services
             catch (Exception ex)
             {
                 return ServiceResult<OrderHeader>.Fail($"Fail to retrive order header: {ex.Message}");
+            }
+        }
+
+        public ServiceResult UpdateOrderHeader(OrderHeader orderHeader)
+        {
+            try
+            {
+                _unitOfWork.OrderHeader.Update(orderHeader);
+                _unitOfWork.Save();
+                return ServiceResult.Ok("Order Details Updated Successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Fail($"Fail to update order detail: {ex.Message}.");
             }
         }
 
