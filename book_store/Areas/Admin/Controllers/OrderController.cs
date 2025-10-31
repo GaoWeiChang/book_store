@@ -1,9 +1,10 @@
-﻿using book_store.Areas.Customer.Services.IServices;
+﻿using book_store.Areas.Admin.Services.IServices;
 using book_store.Models;
 using book_store.Models.ViewModels;
 using book_store.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace book_store.Areas.Admin.Controllers
 {
@@ -68,6 +69,63 @@ namespace book_store.Areas.Admin.Controllers
             }
 
             return RedirectToAction("Details", new { orderid = orderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Role_Admin)]
+        public IActionResult StartProcessing()
+        {
+            _orderService.UpdateStatus(OrderVM.OrderHeader.Id, Roles.StatusInProcess);
+            TempData["success"] = "Order detail updated successfully.";
+
+            return RedirectToAction("Details", new { orderid = OrderVM.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Role_Admin)]
+        public IActionResult ShipOrder()
+        {
+            var orderHeader = _orderService.GetOrderHeader(OrderVM.OrderHeader.Id).Data;
+            orderHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = OrderVM.OrderHeader.Carrier;
+            orderHeader.OrderStatus = Roles.StatusShipped;
+            orderHeader.ShippingDate = DateTime.Now;
+            if (orderHeader.PaymentStatus == Roles.PaymentStatusDelayedPayment)
+            {
+                orderHeader.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+            }
+
+            _orderService.UpdateOrderHeader(orderHeader);
+            TempData["Success"] = "Order Shipped Successfully.";
+            return RedirectToAction("Details", new { orderId = OrderVM.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Role_Admin)]
+        public IActionResult CancelOrder()
+        {
+            var orderHeader = _orderService.GetOrderHeader(OrderVM.OrderHeader.Id).Data;
+
+            if (orderHeader.PaymentStatus == Roles.PaymentStatusApproved)
+            {
+                var options = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeader.PaymentIntentId
+                };
+
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+
+                _orderService.UpdateStatus(orderHeader.Id, Roles.StatusCancelled, Roles.StatusRefunded);
+            }
+            else
+            {
+                _orderService.UpdateStatus(orderHeader.Id, Roles.StatusCancelled, Roles.StatusCancelled);
+            }
+
+            TempData["Success"] = "Order Cancelled Successfully.";
+            return RedirectToAction("Details", new { orderId = OrderVM.OrderHeader.Id });
         }
 
         #region API CALLS

@@ -1,11 +1,11 @@
 ﻿using Azure;
-using book_store.Areas.Customer.Services.IServices;
+using book_store.Areas.Admin.Services.IServices;
 using book_store.DataAccess.Repository.IRepository;
 using book_store.Models;
 using book_store.Models.ViewModels;
 using book_store.Utility;
 
-namespace book_store.Areas.Customer.Services
+namespace book_store.Areas.Admin.Services
 {
     public class OrderService : IOrderService
     {
@@ -22,7 +22,7 @@ namespace book_store.Areas.Customer.Services
 
         public IEnumerable<OrderDetail> GetAllOrderDetails(int orderId)
         {
-            return _unitOfWork.OrderDetail.GetAll(u =>  u.OrderHeaderId == orderId, includeProperties: "Product");
+            return _unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == orderId, includeProperties: "Product");
         }
 
         public ServiceResult AddOrderHeader(OrderHeader orderHeader)
@@ -84,7 +84,7 @@ namespace book_store.Areas.Customer.Services
 
         public void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId)
         {
-            var orderFromDb = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser", tracked:true);
+            var orderFromDb = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser", tracked: true);
             if (!string.IsNullOrEmpty(sessionId))
             {
                 orderFromDb.SessionId = sessionId;
@@ -97,9 +97,9 @@ namespace book_store.Areas.Customer.Services
             _unitOfWork.Save();
         }
 
-        public void UpdateStatus(int id, string orderStatus, string paymentStatus)
+        public void UpdateStatus(int id, string orderStatus, string? paymentStatus=null)
         {
-            var orderFromDb = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser", tracked:true);
+            var orderFromDb = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser", tracked: true);
             if (orderFromDb != null)
             {
                 orderFromDb.OrderStatus = orderStatus;
