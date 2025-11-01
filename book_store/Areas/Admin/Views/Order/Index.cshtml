@@ -1,24 +1,28 @@
 ﻿@{
 	var status = Context.Request.Query["status"];
-	var inprocess = "text-primary-emphasis";
-	var pending = "text-primary-emphasis";
-	var completed = "text-primary-emphasis";
-	var approved = "text-primary-emphasis";
+	var payment_pending = "text-primary-emphasis";
+	var order_processing = "text-primary-emphasis";
+	var payment_approved = "text-primary-emphasis";
+	var order_shipped = "text-primary-emphasis";
+	var order_cancelled = "text-primary-emphasis";
 	var all = "text-primary-emphasis";
 
 	switch (status)
 	{
-		case "inprocess":
-			inprocess = "active text-primary-emphasis bg-warning";
+		case "payment_pending":
+			payment_pending = "active text-primary-emphasis bg-warning";
 			break;
-		case "pending":
-			pending = "active text-primary-emphasis bg-warning";
+		case "payment_approved":
+			payment_approved = "active text-primary-emphasis bg-warning";
 			break;
-		case "completed":
-			completed = "active text-primary-emphasis bg-warning";
+		case "order_processing":
+			order_processing = "active text-primary-emphasis bg-warning";
 			break;
-		case "approved":
-			approved = "active text-primary-emphasis bg-warning";
+		case "order_shipped":
+			order_shipped = "active text-primary-emphasis bg-warning";
+			break;
+		case "order_cancelled":
+			order_cancelled = "active text-primary-emphasis bg-warning";
 			break;
 		default:
 			all = "active text-primary-emphasis bg-warning";
@@ -38,17 +42,20 @@
 		<div class="d-flex justify-content-between pb-3 pt-2">
 			<span></span>
 			<ul class="list-group list-group-horizontal-sm">
-				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="inprocess">
-					<li class="list-group-item @inprocess">In Process</li>
+				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="payment_pending">
+					<li class="list-group-item @payment_pending">Payment Pending</li>
 				</a>
-				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="pending">
-					<li class="list-group-item @pending">Payment Pending</li>
+				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="payment_approved">
+					<li class="list-group-item @payment_approved">Payment Approved</li>
 				</a>
-				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="completed">
-					<li class="list-group-item @completed">Completed</li>
+				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="order_processing">
+					<li class="list-group-item @order_processing">Order Processing</li>
 				</a>
-				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="approved">
-					<li class="list-group-item @approved">Approved</li>
+				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="order_shipped">
+					<li class="list-group-item @order_shipped">Order Shipped</li>
+				</a>
+				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="order_cancelled">
+					<li class="list-group-item @order_cancelled">Order Cancelled</li>
 				</a>
 				<a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="all">
 					<li class="list-group-item @all">All</li>
@@ -62,7 +69,7 @@
 					<th>Name</th>
 					<th>Phone Number</th>
 					<th>Email</th>
-					<th>Status</th>
+					<th>Order Status</th>
 					<th>Total</th>
 					<th></th>
 				</tr>

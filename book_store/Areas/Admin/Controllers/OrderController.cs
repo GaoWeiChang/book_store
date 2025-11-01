@@ -137,17 +137,20 @@ namespace book_store.Areas.Admin.Controllers
 
             switch (status)
             {
-                case "inprocess":
-                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusPending || u.PaymentStatus == Roles.StatusPending);
+                case "payment_pending":
+                    orderHeaders = orderHeaders.Where(u => u.PaymentStatus == Roles.StatusPending && u.OrderStatus == Roles.StatusPending);
                     break;
-                case "pending":
-                    orderHeaders = orderHeaders.Where(u => u.PaymentStatus == Roles.StatusPending);
+                case "payment_approved":
+                    orderHeaders = orderHeaders.Where(u => u.PaymentStatus == Roles.StatusApproved && u.OrderStatus == Roles.StatusApproved);
                     break;
-                case "completed":
-                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusShipped);
+                case "order_processing":
+                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusInProcess && u.PaymentStatus == Roles.StatusApproved);
                     break;
-                case "approved":
-                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusApproved || u.PaymentStatus == Roles.StatusApproved);
+                case "order_shipped":
+                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusShipped && u.PaymentStatus == Roles.StatusApproved);
+                    break;
+                case "order_cancelled":
+                    orderHeaders = orderHeaders.Where(u => u.OrderStatus == Roles.StatusCancelled);
                     break;
                 default:
                     break;
