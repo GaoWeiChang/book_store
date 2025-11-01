@@ -44,6 +44,7 @@ builder.Services.AddScoped<IProductService, book_store.Areas.Admin.Services.Prod
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 
 var app = builder.Build();
 
