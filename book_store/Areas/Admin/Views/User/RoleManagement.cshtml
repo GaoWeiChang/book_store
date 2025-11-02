@@ -1,0 +1,33 @@
+﻿@model RoleManagementVM
+
+<div class="card mt-4">
+	<div class="card-header bg-light ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h2 class="py-2">Manage User Role</h2>
+			</div>
+		</div>
+	</div>
+
+	<div class="card-body p-4">
+		<form method="post" class="row">
+			<input asp-for="ApplicationUser.Id" hidden />
+			<div class="border p-3">
+				<div class="form-floating py-2 col-12">
+					<input asp-for="ApplicationUser.Name" class="form-control border-0 shadow" />
+					<label asp-for="ApplicationUser.Name" class="ms-2"></label>
+				</div>
+				<div class="form-floating py-2 col-12">
+					<select asp-for="ApplicationUser.Role" asp-items="@Model.RoleList" class="form-select"></select>
+				</div>
+	
+				<div class="mt-3">
+					<button type="submit" class="btn btn-success" style="width:150px">Update Role</button>
+					<a asp-action="Index" class="btn btn-secondary" style="width:150px">
+						Back to List
+					</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
