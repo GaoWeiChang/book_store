@@ -1,6 +1,6 @@
 # Bookstore Management System
 
-A practice project demonstrating large-scale system design - built with .NET Core MVC (.NET 8) using n-layer architecture for enterprise-grade application development.
+A project that demonstrating large-scale system design - built with .NET Core MVC (.NET 8) using n-layer architecture for enterprise-grade application development.
 
 ## Getting Started
 1.) Clone the repository
