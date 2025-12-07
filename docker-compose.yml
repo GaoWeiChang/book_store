@@ -1,0 +1,18 @@
+services:
+  book_store_dataaccess: 
+    container_name: bookstoreDB
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+        - 8002:1433
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=password@12345#  
+  book_store:
+    image: ${DOCKER_REGISTRY-}bookstore
+    build:
+      context: .
+      dockerfile: book_store/Dockerfile
+    ports:
+      - 8001:80
+    depends_on:
+      - book_store_dataaccess
